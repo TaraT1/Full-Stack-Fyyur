@@ -13,6 +13,8 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from array import array
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -23,7 +25,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database - URI in config.py
+# TODO Done: connect to a local postgresql database - URI in config.py
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -38,17 +40,17 @@ class Venue(db.Model):
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
+    image_link = db.Column(db.String(120))
     facebook_link = db.Column(db.String(120))
-    genres = db.Column(db.String(120))
-    website = db.Column(db.String(120))
+    genres = db.Column(db.ARRAY(db.String(120)))
+    website_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.String(120))
     seeking_description = db.Column(db.String(120))
     show = db.relationship('Show', backref='Venue', lazy=True)
     num_upcoming_shows = db.Column(db.Integer)
 
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # todo Update genres Artist & Show; Needs to be multiple options
+    # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -61,13 +63,13 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    website = db.Column(db.String(120))
+    website_link = db.Column(db.String(120))
     show = db.relationship('Show', backref='Artist', lazy=True)
     num_upcoming_shows = db.Column(db.Integer)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# TODO Done: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 # class Shows
 
 class Show(db.Model):
@@ -191,7 +193,7 @@ def show_venue(venue_id):
     "city": "New York",
     "state": "NY",
     "phone": "914-003-1132",
-    "website": "https://www.theduelingpianos.com",
+    "website_link": "https://www.theduelingpianos.com",
     "facebook_link": "https://www.facebook.com/theduelingpianos",
     "seeking_talent": False,
     "image_link": "https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
@@ -208,7 +210,7 @@ def show_venue(venue_id):
     "city": "San Francisco",
     "state": "CA",
     "phone": "415-000-1234",
-    "website": "https://www.parksquarelivemusicandcoffee.com",
+    "website_link": "https://www.parksquarelivemusicandcoffee.com",
     "facebook_link": "https://www.facebook.com/ParkSquareLiveMusicAndCoffee",
     "seeking_talent": False,
     "image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
@@ -255,13 +257,46 @@ def create_venue_submission():
 
   # on successful db insert, flash success
   #flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  '''
-  # shaky ground territory (ref https://knowledge.udacity.com/questions/68367)
-  #Implement try-except-finally pattern
 
-  #venue table includes 
-'''
   form = VenueForm(request.form)
+  
+  venue = Venue(
+    name = request.form['name'],
+    city = request.form['city'],
+    state = request.form['state'],
+    address = request.form['address'],
+    phone = request.form['phone'],
+    image_link = request.form['image_link'],
+    facebook_link = request.form['facebook_link'],
+    genres = request.form.getlist('genres'),
+    website_link = request.form['website_link'],
+    seeking_talent = request.form['seeking_talent'],
+    seeking_description = request.form['seeking_description'],    
+  )
+
+  print(venue)
+ 
+  try:
+    db.session.add(venue)
+    db.session.commit()
+    # TODO Done: on successful db insert, flash success
+    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/ 
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
+  except Exception as e:
+    db.session.rollback()
+    print(e)
+    # TODO Done: on unsuccessful db insert, flash an error instead.
+    flash('Problem: Venue ' + request.form['name'] + ' could not be added.')  
+
+  finally:
+    db.session.close()
+  return render_template('pages/home.html')
+  
+  '''
+  # shaky ground: (ref https://knowledge.udacity.com/questions/68367)
+  #Done: Implement try-except-finally pattern
+  not sure what's going on here
   if form.validate():
     try:
       seeking_talent = False
@@ -271,7 +306,7 @@ def create_venue_submission():
       if 'seeking_description' in request.form:
         seeking_description = request.form['seeking_description']
         new_venue = Venue(name=request.form['name'],
-        genres=request.form.getlist('genres'),##many to many relationship
+        genres=request.form.getlist('genres'),##2D array column
         address=request.form['address'],
         city=request.form['city'],
         state=request.form['state'],
@@ -285,16 +320,7 @@ def create_venue_submission():
         Venue.insert(new_venue)
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
     except SQLAlchemyError as e: 
-      print(e)
-
-
-
-
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  flash('Problem: Venue ' + request.form['name'] + ' could not be listed.')
-  return render_template('pages/home.html')
+      print(e)'''
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
