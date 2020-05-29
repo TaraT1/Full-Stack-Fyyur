@@ -148,7 +148,7 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
+  response={-
     "count": 1,
     "data": [{
       "id": 2,
@@ -258,7 +258,8 @@ def create_venue_submission():
   # on successful db insert, flash success
   #flash('Venue ' + request.form['name'] + ' was successfully listed!')
 
-  form = VenueForm(request.form)
+  #form = VenueForm(request.form)
+  form = VenueForm()
   
   venue = Venue(
     name = request.form['name'],
@@ -293,35 +294,6 @@ def create_venue_submission():
     db.session.close()
   return render_template('pages/home.html')
   
-  '''
-  # shaky ground: (ref https://knowledge.udacity.com/questions/68367)
-  #Done: Implement try-except-finally pattern
-  not sure what's going on here
-  if form.validate():
-    try:
-      seeking_talent = False
-      seeking_description = ''
-      if 'seeking_talent' in request.form:
-        seeking_talent = request.form['seeking_talent'] == 'y'
-      if 'seeking_description' in request.form:
-        seeking_description = request.form['seeking_description']
-        new_venue = Venue(name=request.form['name'],
-        genres=request.form.getlist('genres'),##2D array column
-        address=request.form['address'],
-        city=request.form['city'],
-        state=request.form['state'],
-        phone=request.form['phone'],
-        website=request.form['website'],
-        facebook_link=request.form['facebook_link'],
-        image_link=request.form['image_link'],
-        seeking_talent=seeking_talent,
-        seeking_description=seeking_description,
-        )
-        Venue.insert(new_venue)
-        flash('Venue ' + request.form['name'] + ' was successfully listed!')
-    except SQLAlchemyError as e: 
-      print(e)'''
-
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
