@@ -7,8 +7,18 @@ class ShowForm(Form):
     artist_id = StringField(
         'artist_id'
     )
+    artist_name = StringField(
+        'artist_name'
+    )
+    #image_link.artist - artist_image_link
+    image_link = StringField(
+        'image_link', validators=[URL()]
+    )
     venue_id = StringField(
         'venue_id'
+    )
+    venue_name= StringField(
+        'venue_name'
     )
     start_time = DateTimeField(
         'start_time',
