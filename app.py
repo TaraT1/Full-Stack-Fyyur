@@ -115,12 +115,55 @@ def index():
 
 #  Venues
 #  ----------------------------------------------------------------
-
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
+  # TODO: Done replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
+  # Works - Alexander M approach How to filter Show.start_time for venues route
+  
+  areas = Venue.query.distinct('city','state').all()
+  
+  def format_data(area):
+    venues = Venue.query.filter_by(city=area.city, state=area.state).all()
+
+    def format_venues(venue):
+      shows = venue.show
+      upcoming_shows = [show for show in shows if show.start_time >= datetime.today()]
+      return {
+        "id": venue.id,
+        "name": venue.name,
+        "num_upcoming_shows": len(upcoming_shows)
+      }
+
+    return {
+      "city": area.city,
+      "state": area.state,
+      "venues": list(map(lambda venue: format_venues(venue=venue), venues))
+    }
+  data = list(map(lambda area: format_data(area=area), areas))
+    
+  return render_template('pages/venues.html', areas=data)
+  
+  
+  
+  '''
+  areas = Venue.query.distinct('city','state').all()
+  data=[]
+  for area in areas:
+    venues = Venue.query.filter(Venue.city == area.city, Venue.state == area.state).all()
+    for venue in venues:
+      id = venue.id
+      name = venue.name
+      record = {
+        'city': area.city,
+        'state': area.state,
+        'venues': {"id": id, "name": name}
+      }
+      data.append(record)
+  return render_template('pages/venues.html', areas = data)
+    '''  
+  ''' 
+    STATIC DATA
     "city": "San Francisco",
     "state": "CA",
     "venues": [{
@@ -141,14 +184,16 @@ def venues():
       "num_upcoming_shows": 0,
     }]
   }]
-  return render_template('pages/venues.html', areas=data);
+  '''
+  
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={-
+ '''
+ response={-
     "count": 1,
     "data": [{
       "id": 2,
@@ -156,8 +201,9 @@ def search_venues():
       "num_upcoming_shows": 0,
     }]
   }
+  
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
-
+'''
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
@@ -271,7 +317,7 @@ def create_venue_submission():
     seeking_description = request.form['seeking_description'],    
   )
 
-  print(venue)
+  #print(venue)
  
   try:
     db.session.add(venue)
@@ -288,7 +334,8 @@ def create_venue_submission():
 
   finally:
     db.session.close()
-  return render_template('pages/home.html')
+  return render_template('pages/venues.html')
+  #ex: return render_template('pages/shows.html', shows=data)
   
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
@@ -509,6 +556,7 @@ def create_artist_submission():
   finally:
     db.session.close()
   return render_template('pages/home.html')
+  return render_template('pages/shows.html', shows=data)
 
 
 #  Shows
