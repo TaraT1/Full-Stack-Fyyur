@@ -120,7 +120,7 @@ def venues():
   # TODO: Done replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
   # Works - Alexander M approach How to filter Show.start_time for venues route
-  
+
   areas = Venue.query.distinct('city','state').all()
   
   def format_data(area):
@@ -350,7 +350,25 @@ def delete_venue(venue_id):
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
+  # TODO: Done replace with real data returned from querying the database
+  # for artist in artists | artist.id  | artist.name
+
+  data = []
+  artists = Artist.query.all()
+  for artist in artists:
+    id = Artist.id
+    name = Artist.name
+  
+  
+  return render_template('pages/artists.html', artists=artists)
+
+
+
+
+
+
+
+  '''
   data=[{
     "id": 4,
     "name": "Guns N Petals",
@@ -361,7 +379,9 @@ def artists():
     "id": 6,
     "name": "The Wild Sax Band",
   }]
+  
   return render_template('pages/artists.html', artists=data)
+  '''
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
@@ -453,8 +473,10 @@ def show_artist(artist_id):
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
   }
+  '''
   data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   return render_template('pages/show_artist.html', artist=data)
+  '''
 
 #  Update
 #  ----------------------------------------------------------------
@@ -535,7 +557,8 @@ def create_artist_submission():
     facebook_link = request.form['facebook_link'],
     genres = request.form.getlist('genres'),
     website_link = request.form['website_link'],
-    #num_upcoming_shows = request.form['num_upcoming_shows']
+    show = request.form['show'],
+    num_upcoming_shows = request.form['num_upcoming_shows'],
   )
 
   print(artist)
@@ -567,6 +590,7 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+  '''
   data=[{
     "venue_id": 1,
     "venue_name": "The Musical Hop",
@@ -604,6 +628,8 @@ def shows():
     "start_time": "2035-04-15T20:00:00.000Z"
   }]
   return render_template('pages/shows.html', shows=data)
+  '''
+
 
 @app.route('/shows/create')
 def create_shows():
