@@ -35,12 +35,12 @@ class Venue(db.Model):
     __tablename__ = 'Venue'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
     phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(120))
+    image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     genres = db.Column(db.ARRAY(db.String(120)))
     website_link = db.Column(db.String(120))
@@ -49,6 +49,8 @@ class Venue(db.Model):
     show = db.relationship('Show', backref='Venue', lazy=True)
     num_upcoming_shows = db.Column(db.Integer)
 
+    # show = db.Column(db.Integer, db.ForeignKey('Show.id', nullable=True, primary_key=True, lazy=True))
+
     # todo Update genres Artist & Show; Needs to be multiple options
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -56,7 +58,7 @@ class Artist(db.Model):
     __tablename__ = 'Artist'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable = False)
+    name = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
@@ -67,6 +69,8 @@ class Artist(db.Model):
     show = db.relationship('Show', backref='Artist', lazy=True)
     num_upcoming_shows = db.Column(db.Integer)
 
+    #show = db.Column(db.Integer, db.ForeignKey('Show.id', nullable=True, primary_key=True, lazy=True))
+
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Done: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -76,15 +80,16 @@ class Show(db.Model):
     __tablename__ = 'Show'
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date)
-    time = db.Column(db.DateTime)
-    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'))
-    #venue_name = db.Column(db.String)
+    start_time = db.Column(db.DateTime, nullable=False)
+    venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
+    #venue_name = db.relationship('Venue.name', backref='Show', lazy=True)
     artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
-    #artist_name = 
-    genres = db.Column(db.ARRAY(db.String(120)), default ='Artist.genres')
+    #artist_name = db.relationship('Artist.name', backref='Show', lazy=True)
+    #image_link = db.relationship('Artist.image_link', backref='Show', lazy=True)
+    #genres = db.Column(db.ARRAY(db.String(120)), default ='Artist.genres')
     
-
+    #date = db.Column(db.Date)
+    #time = db.Column(db.DateTime)
 
     
 
@@ -121,32 +126,33 @@ def venues():
   #       num_shows should be aggregated based on number of upcoming shows per venue.
   # Works - Alexander M approach How to filter Show.start_time for venues route
 
+  
+  ''' 
   areas = Venue.query.distinct('city','state').all()
   
   def format_data(area):
     venues = Venue.query.filter_by(city=area.city, state=area.state).all()
 
-    def format_venues(venue):
-      shows = venue.show
+ 
+      shows = Venue.show
       upcoming_shows = [show for show in shows if show.start_time >= datetime.today()]
       return {
-        "id": venue.id,
-        "name": venue.name,
+        "id": Venue.id,
+        "name": Venue.name,
         "num_upcoming_shows": len(upcoming_shows)
       }
-
+      
+  def format_venues(venue):
     return {
       "city": area.city,
       "state": area.state,
-      "venues": list(map(lambda venue: format_venues(venue=venue), venues))
+     # "venues": list(map(lambda venue: format_venues(venue=venue), venues))
     }
   data = list(map(lambda area: format_data(area=area), areas))
     
   return render_template('pages/venues.html', areas=data)
-  
-  
-  
   '''
+  
   areas = Venue.query.distinct('city','state').all()
   data=[]
   for area in areas:
@@ -154,16 +160,18 @@ def venues():
     for venue in venues:
       id = venue.id
       name = venue.name
-      record = {
+      num_upcoming_shows = venue.num_upcoming_shows
+      venues = {
         'city': area.city,
         'state': area.state,
-        'venues': {"id": id, "name": name}
+        'venues':  [{"id": id, "name": name, "num_upcoming_shows": num_upcoming_shows }],
       }
-      data.append(record)
-  return render_template('pages/venues.html', areas = data)
-    '''  
+    data.append(venue)
+  
+  return render_template('pages/venues.html', areas = areas, venues = venues)
+  
   ''' 
-    STATIC DATA
+  STATIC DATA
     "city": "San Francisco",
     "state": "CA",
     "venues": [{
@@ -341,6 +349,7 @@ def create_venue_submission():
 def delete_venue(venue_id):
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+  
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
@@ -353,12 +362,10 @@ def artists():
   # TODO: Done replace with real data returned from querying the database
   # for artist in artists | artist.id  | artist.name
 
-  data = []
   artists = Artist.query.all()
   for artist in artists:
     id = Artist.id
     name = Artist.name
-  
   
   return render_template('pages/artists.html', artists=artists)
 
@@ -557,8 +564,8 @@ def create_artist_submission():
     facebook_link = request.form['facebook_link'],
     genres = request.form.getlist('genres'),
     website_link = request.form['website_link'],
-    show = request.form['show'],
-    num_upcoming_shows = request.form['num_upcoming_shows'],
+    #show = request.form['show'],
+    #num_upcoming_shows = request.form['num_upcoming_shows'],
   )
 
   print(artist)
@@ -590,6 +597,19 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+
+  #venue id, venue name, artist id, artist name, artist image link, start time
+
+  shows = Show.query.all()
+  for show in shows:
+    venue_id = Venue.id
+    venue_name = Venue.name
+    artist_id = Artist.id
+    artist_name = Artist.name
+    artist_image_link = Artist.image_link
+    start_time = Show.start_time
+
+  return render_template('pages/shows.html', shows=shows)
   '''
   data=[{
     "venue_id": 1,
@@ -642,12 +662,35 @@ def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
+  form = ShowForm()
+
+  show = Show(
+    venue_id = request.form['venue_id'],
+    #venue_name = request.form['venue_name'],
+    artist_id = request.form['artist_id'],
+    #artist_name = request.form['artist_name'],
+    #artist_image_link = request.form['artist_image_link'],
+    start_time = request.form['start_time'],
+  )
+
+  print(show)
+
+  try:
+    db.session.add(show)
+    db.session.commit() 
+    # on successful db insert, flash success
+    flash('Show was successfully listed!')
+  
+  except Exception as e:
+    db.session.rollback()
+    print(e)  
+  # TODO: DONE on unsuccessful db insert, flash an error instead.
+    flash('Problem: Show for ' + request.form['start_time'] + ' could not be added.')  
+
+  finally:
+    db.session.close()
+  return render_template('pages/shows.html')
+  #return render_template('pages/shows.html', show=show)
 
 @app.errorhandler(404)
 def not_found_error(error):
