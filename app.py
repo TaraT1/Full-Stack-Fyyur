@@ -152,23 +152,23 @@ def venues():
     
   return render_template('pages/venues.html', areas=data)
   '''
-  
+  # Returns state & city. Missing venues
   areas = Venue.query.distinct('city','state').all()
   data=[]
   for area in areas:
-    venues = Venue.query.filter(Venue.city == area.city, Venue.state == area.state).all()
-    for venue in venues:
+    area.venues = Venue.query.filter(Venue.city == area.city, Venue.state == area.state).all()
+    for venue in area.venues:
       id = venue.id
       name = venue.name
       num_upcoming_shows = venue.num_upcoming_shows
       venues = {
         'city': area.city,
         'state': area.state,
-        'venues':  [{"id": id, "name": name, "num_upcoming_shows": num_upcoming_shows }],
+        'venues': [{"id": id, "name": name, "num_upcoming_shows": num_upcoming_shows }],
       }
-    data.append(venue)
+  #data.append(venues)
   
-  return render_template('pages/venues.html', areas = areas, venues = venues)
+  return render_template('pages/venues.html', areas = areas, data = venues)
   
   ''' 
   STATIC DATA
