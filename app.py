@@ -15,6 +15,7 @@ from flask_wtf import Form
 from forms import *
 from array import array
 
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -100,12 +101,13 @@ class Show(db.Model):
 #----------------------------------------------------------------------------#
 
 def format_datetime(value, format='medium'):
-  date = dateutil.parser.parse(value)
+  date = dateutil.parser.parse(str(value))
   if format == 'full':
       format="EEEE MMMM, d, y 'at' h:mma"
   elif format == 'medium':
       format="EE MM, dd, y h:mma"
-  return babel.dates.format_datetime(date, format)
+  return babel.dates.format_datetime(date, format, locale='en')
+  #return babel.dates.format_datetime(str(date, format, locale='en'))
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -126,49 +128,56 @@ def venues():
   #       num_shows should be aggregated based on number of upcoming shows per venue.
   # Works - Alexander M approach How to filter Show.start_time for venues route
 
-  
-  ''' 
+  '''
+  ***Screwed everything up => okay now except for upcoming_shows
   areas = Venue.query.distinct('city','state').all()
   
   def format_data(area):
     venues = Venue.query.filter_by(city=area.city, state=area.state).all()
 
  
-      shows = Venue.show
-      upcoming_shows = [show for show in shows if show.start_time >= datetime.today()]
-      return {
-        "id": Venue.id,
-        "name": Venue.name,
-        "num_upcoming_shows": len(upcoming_shows)
-      }
+    shows = Venue.show
+    #upcoming_shows = [show for show in shows if show.start_time >= datetime.today()]
+    return {
+      "id": Venue.id,
+      "name": Venue.name,
+      "num_upcoming_shows": Venue.num_upcoming_shows #len(upcoming_shows)
+    }
       
   def format_venues(venue):
     return {
       "city": area.city,
       "state": area.state,
-     # "venues": list(map(lambda venue: format_venues(venue=venue), venues))
+      "venues": list(map(lambda venue: format_venues(venue=venue), venues))
     }
   data = list(map(lambda area: format_data(area=area), areas))
     
   return render_template('pages/venues.html', areas=data)
   '''
-  # Returns state & city. Missing venues
+  
+  # Returns state, city & venues. Needs # of upcoming shows
   areas = Venue.query.distinct('city','state').all()
+  #num_upcoming_shows = Venue.Show.start_time
   data=[]
   for area in areas:
     area.venues = Venue.query.filter(Venue.city == area.city, Venue.state == area.state).all()
     for venue in area.venues:
-      id = venue.id
-      name = venue.name
-      num_upcoming_shows = venue.num_upcoming_shows
-      venues = {
-        'city': area.city,
-        'state': area.state,
-        'venues': [{"id": id, "name": name, "num_upcoming_shows": num_upcoming_shows }],
-      }
-  #data.append(venues)
-  
+      venue.id = Venue.id
+      venue.name = Venue.name
+      #shows. Query!!!
+      shows = Show.query.all()
+      for show in shows:
+        #num_upcoming_shows = len(db.session.query(Show).filter(Show.start_time > datetime.now()).all())
+        num_upcoming_shows = Show.query.filter(Show.start_time > datetime.now()).all()
+        venues = {
+          'city': area.city,
+          'state': area.state,
+          'venues': [{"venue.id": venue.id, "venue.name": venue.name, "num_upcoming_shows": num_upcoming_shows }],
+          }
+        data.append(venues) 
+    
   return render_template('pages/venues.html', areas = areas, data = venues)
+  
   
   ''' 
   STATIC DATA
@@ -200,7 +209,10 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
- '''
+ 
+ 
+ 
+ ''' DUMMY DATA
  response={-
     "count": 1,
     "data": [{
@@ -216,6 +228,34 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
+  
+  data=[]
+  venue_id = Venue.id
+  venue_name = Venue.name
+  venue_genres = Venue.genres
+
+  '''
+  #shows
+    query Venue.shows.datetime 
+    past_shows = < current time: [{
+      artist_id
+      artist_name
+      artist_image_link
+      start_time
+    }]
+    upcoming_shows: [],
+    past_shows_count: ,
+    "upcoming_shows_count": ,
+
+
+  
+
+  '''
+  return render_template('pages/show_venue.html', venue = data)
+
+
+  
+  '''
   data1={
     "id": 1,
     "name": "The Musical Hop",
@@ -295,6 +335,8 @@ def show_venue(venue_id):
   }
   data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
   return render_template('pages/show_venue.html', venue=data)
+  
+  '''
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -364,8 +406,8 @@ def artists():
 
   artists = Artist.query.all()
   for artist in artists:
-    id = Artist.id
-    name = Artist.name
+    artist.id = artist.id
+    artist.name = artist.name
   
   return render_template('pages/artists.html', artists=artists)
 
@@ -395,6 +437,9 @@ def search_artists():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
   # search for "band" should return "The Wild Sax Band".
+  
+  
+  
   response={
     "count": 1,
     "data": [{
@@ -407,8 +452,28 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  # shows the venue page with the given venue_id
+  # shows the venue page with the given venue_id (show_artist, )
   # TODO: replace with real venue data from the venues table, using venue_id
+  
+  #Show Artists
+  data=[]
+  artist.id = Artist.id  
+  artist.name = Artist.name
+  show.start_time = Show.start_time  
+
+
+   
+  
+  
+  
+  
+  
+  
+  #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  return render_template('pages/show_artist.html', data=artist)
+  
+  '''
+  #DUMMY DATA
   data1={
     "id": 4,
     "name": "Guns N Petals",
@@ -480,10 +545,13 @@ def show_artist(artist_id):
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
   }
-  '''
+  
   data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   return render_template('pages/show_artist.html', artist=data)
+
   '''
+
+  
 
 #  Update
 #  ----------------------------------------------------------------
@@ -602,14 +670,33 @@ def shows():
 
   shows = Show.query.all()
   for show in shows:
-    venue_id = Venue.id
-    venue_name = Venue.name
-    artist_id = Artist.id
-    artist_name = Artist.name
-    artist_image_link = Artist.image_link
-    start_time = Show.start_time
+    start_time = str(show.start_time)
+    data = {
+        "venue_id": show.venue_id,
+        "venue_name": Venue.query.filter_by(id=show.venue_id).first().name,
+        "artist_id": show.artist_id,
+        "artist_name": Artist.query.filter_by(id=show.artist_id).first().name,
+        "artist_image_link": Artist.query.filter_by(id=show.artist_id).first().image_link,
+        "start_time": str(show.start_time)
+    }
+    show.start_time.strftime("%m/%d/%Y, %H:%M")
+    format_datetime(str(show.start_time))
+    
+    return render_template('pages/shows.html', shows=shows)
+  
+  '''
+  for show in shows: (Above is formatting datetime in FE)
+    data.append({
+    "venue_id": Venue.id,
+    "venue_name": Venue.name,
+    "artist_id": Artist.id,
+    "artist_name": Artist.name,
+    "artist_image_link": Artist.image_link,
+    "start_time": str(Show.start_time)
+    })
+  '''
 
-  return render_template('pages/shows.html', shows=shows)
+  
   '''
   data=[{
     "venue_id": 1,
