@@ -246,26 +246,37 @@ def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
   
+  '''
   venue = Venue.query.get(venue_id)
-  
+  venue_id = Venue.id
+  #shows = Show.query.all()
+  shows = Show.query.filter_by(id=Show.artist_id).all()
   '''
-  #shows
-    query Venue.shows.datetime 
-    past_shows = < current time: [{
-      artist_id
-      artist_name
-      artist_image_link
-      start_time
-    }]
-    upcoming_shows: [],
-    past_shows_count: ,
-    "upcoming_shows_count": ,
+  #venue id
+  venue = Venue.query.get(venue_id)
+  shows = Show.query.filter_by(venue_id=Show.venue_id).all()
 
-    #field formatting
-  '''
-  
+  #Shows - past and future
+  past_shows = []
+  upcoming_shows = []
+  for show in shows:
+    if show.start_time < datetime.now():
+      past_shows.append({
+        "artist_id": show.artist_id,
+        "artist_name": Artist.query.filter_by(id=show.artist_id).first().name,
+        "artist_image_link": Artist.query.filter_by(id=show.artist_id).first().image_link,
+        "start_time": format_datetime(show.start_time)
+      })
+    elif show.start_time > datetime.now():
+      upcoming_shows.append({
+          "artist_id": show.artist_id,
+          "artist_name": Artist.query.filter_by(id=show.artist_id).first().name,
+          "artist_image_link": Artist.query.filter_by(id=show.artist_id).first().image_link,
+          "start_time": format_datetime(show.start_time)
+        })
+  #TODO needs shows info; working on it
   data = {
-    "id": venue.id,
+    "id": venue_id,
     "name": venue.name,
     "genres": venue.genres,
     "address": venue.address,
@@ -276,25 +287,12 @@ def show_venue(venue_id):
     "facebook_link": venue.facebook_link,
     "seeking_talent": venue.seeking_talent,
     "seeking_description": venue.seeking_description,
-    "image_link": venue.image_link
+    "image_link": venue.image_link,
+    "past_shows": past_shows,
+    "upcoming_shows": upcoming_shows,
+    "past_shows_count": len(past_shows),
+    "upcoming_shows_count": len(upcoming_shows)
   }
-  '''
-    "past_shows": [{
-      "artist_id": ,
-      "artist_name": ,
-      "artist_image_link": ,
-      "start_time": 
-    }],
-    "upcoming_shows": [],
-    "past_shows_count": ,
-    "upcoming_shows_count": 
-  '''
-   
-  
-
-
-  
-
   
   return render_template('pages/show_venue.html', venue = data)
 
@@ -411,8 +409,6 @@ def create_venue_submission():
     seeking_talent = request.form['seeking_talent'],
     seeking_description = request.form['seeking_description'],    
   )
-
-  #print(venue)
  
   try:
     db.session.add(venue)
