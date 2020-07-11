@@ -88,6 +88,7 @@ class Show(db.Model):
 
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(str(value))
+  #date = dateutil.parser.parse(value)
   if format == 'full':
       format="EEEE MMMM, d, y 'at' h:mma"
   elif format == 'medium':
@@ -470,18 +471,26 @@ def shows():
 
 
   data = []
-  shows = Show.query.join(Venue, Show.venue_id == Venue.id).join(Artist, Artist.id == Show.artist_id).filter(Show.start_time > datetime.now()).all()
+  #upcoming_shows = Show.query.filter(Show.start_time > datetime.today()).all()
+  shows = Show.query.join(Venue, Show.venue_id == Venue.id).join(Artist, Artist.id == Show.artist_id).all() #filter(Show.start_time > datetime.now()).all()
+
+  #db.session
 
   for show in shows:
+    #if show.start_time > datetime.now():
+    #venue
+    #artist
 
+    
     #format for html template
-    show.venue_id = Show.venue_id
+    #show.venue_id = Show.venue_id
     show.venue_name = Venue.name
-    show.artist_id = Show.artist_id
+    #show.artist_id = Show.artist_id
     show.artist_name = Artist.name
     show.artist_image_link = Artist.image_link 
-    show.start_time = Show.start_time
+    #show.start_time = show.start_time
     
+
     
     show_detail = {
         "venue_id": show.venue_id,
@@ -489,13 +498,15 @@ def shows():
         "artist_id": show.artist_id,
         "artist_name": show.artist_name,
         "artist_image_link": show.artist_image_link,
-        "start_time": show.start_time
+        #"start_time": show.start_time.strftime("%m/%d/%Y, %H:%M")
+        "start_time": format_datetime(show.start_time)
     }
     
     data.append(show_detail)
-    
-    
+      
+      
     #show.start_time.strftime("%m/%d/%Y, %H:%M")
+    #datetime.strptime(show.start_time, "%m/%d/%Y, %H:%M")
 
     return render_template('pages/shows.html', shows=data)
   
