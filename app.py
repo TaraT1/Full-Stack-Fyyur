@@ -483,8 +483,9 @@ def create_artist_submission():
 @app.route('/shows')
 def shows():
   # displays list of shows at /shows
-  # TODO: PROBLEMS replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
+  # TODO: DONE replace with real venues data.
+  #       num_shows should be aggregated based on number of upcoming shows per venue. 
+  # Add: ascending sort order start time
 
   data = []
   shows = Show.query.join(Venue, Show.venue_id == Venue.id).join(Artist, Artist.id == Show.artist_id).all()
@@ -495,15 +496,15 @@ def shows():
       #venue
       venues = Venue.query.filter_by(id=Show.venue_id).all() #each show has venue
       for venue in venues:
-        show.venue_id = Show.venue_id
-        show.venue_name = Venue.name
+        show.venue_id = show.venue_id
+        show.venue_name = venue.name
          
       #artist
       artists = Artist.query.filter_by(id=Show.artist_id).all()
       for artist in artists:
-        show.artist_id = Show.artist_id
-        show.artist_name = Artist.name
-        show.artist_image_link = Artist.image_link 
+        show.artist_id = show.artist_id
+        show.artist_name = artist.name
+        show.artist_image_link = artist.image_link 
 
 
       '''
