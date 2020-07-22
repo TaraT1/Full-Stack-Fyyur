@@ -153,26 +153,30 @@ def venues():
   
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
+  # TODO: DONE implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
 
-  #get input, search Venue
- 
- 
- 
- ''' DUMMY DATA
- response={-
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }
-  
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
-'''
+  #search_venues.html: search_term, results.count, results.data, venue.id, venue.name
+
+  #From input, return matching venues including partial string search
+  search_term = request.form.get('search_term')
+  venues = Venue.query.filter(Venue.name.ilike('%{}%'.format(search_term))).all()
+  data = []
+  for venue in venues:
+    data.append({
+      "id": venue.id,
+      "name": venue.name,
+      "num_upcoming_shows": venue.num_upcoming_shows
+    })
+
+  response = {
+    "count": len(venues),
+    "data": data
+  } 
+
+  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))  
+
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id in venues.html
@@ -200,7 +204,7 @@ def show_venue(venue_id):
           "artist_image_link": Artist.query.filter_by(id=show.artist_id).first().image_link,
           "start_time": format_datetime(show.start_time)
         })
-  #TODO Done shows info; working on it
+  #TODO Done shows info
   data = {
     "id": venue.id,
     "name": venue.name,
@@ -310,7 +314,7 @@ def search_artists():
       "count": len(search),
       "id": artist.id,
       "name": artist.name,
-      #"num_upcoming_shows": Artist.num_upcoming_shows
+      #"num_upcoming_shows": artist.num_upcoming_shows
     }
     
     '''
@@ -505,17 +509,6 @@ def shows():
         show.artist_id = show.artist_id
         show.artist_name = artist.name
         show.artist_image_link = artist.image_link 
-
-
-      '''
-      #format for html template
-      show.venue_id = Show.venue_id
-      show.venue_name = Venue.name
-      show.artist_id = Show.artist_id
-      show.artist_name = Artist.name
-      show.artist_image_link = Artist.image_link 
-      #show.start_time = show.start_time
-      '''
 
     
       show_detail = {
