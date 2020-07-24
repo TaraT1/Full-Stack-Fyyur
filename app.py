@@ -45,7 +45,6 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
     genres = db.Column(db.ARRAY(db.String(120)))
     website_link = db.Column(db.String(120))
-    #seeking_talent = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=False)
     seeking_description = db.Column(db.String(120))
     show = db.relationship('Show', backref='Venue', lazy=True)
@@ -71,13 +70,8 @@ class Artist(db.Model):
     show = db.relationship('Show', backref='Artist', lazy=True)
     num_upcoming_shows = db.Column(db.Integer)
 
-
-
-    #ToDo: Done Add [fb] seeking_venue and seeking_description [img] 
-
     # TODO Done: implement any missing fields, as a database migration using Flask-Migrate
-
-# TODO Done: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+    # TODO Done: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 class Show(db.Model):
     __tablename__ = 'Show'
@@ -118,8 +112,7 @@ def index():
 def venues():
   # TODO: Done replace with real venues data.
   # DONE     num_shows should be aggregated based on number of upcoming shows per venue.
-  
-  # Returns state, city & venues. Needs # of upcoming shows DONE
+ 
   areas = Venue.query.distinct('city','state').all()
   data=[]
   num_upcoming_shows = []
@@ -132,7 +125,7 @@ def venues():
       #shows past & upcoming
       shows = Show.query.filter_by(id=venue.id).all()
       for show in shows:
-        if show.start_time > datetime.today():
+        if show.start_time >= datetime.today():
           num_upcoming_shows = len(shows)
         
         elif show.start_time < datetime.today():
@@ -190,14 +183,14 @@ def show_venue(venue_id):
   past_shows = []
   upcoming_shows = []
   for show in shows:
-    if show.start_time < datetime.now():
+    if show.start_time < datetime.today():
       past_shows.append({
         "artist_id": show.artist_id,
         "artist_name": Artist.query.filter_by(id=show.artist_id).first().name,
         "artist_image_link": Artist.query.filter_by(id=show.artist_id).first().image_link,
         "start_time": format_datetime(show.start_time)
       })
-    elif show.start_time > datetime.now():
+    elif show.start_time >= datetime.today():
       upcoming_shows.append({
           "artist_id": show.artist_id,
           "artist_name": Artist.query.filter_by(id=show.artist_id).first().name,
