@@ -497,28 +497,25 @@ def shows():
   # displays list of shows at /shows
   # TODO: DONE replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue. 
-  # Add: ascending sort order start time
+  #shows.html: show.artist_image_link, show.artist_id, show.artist_name, 
+  #show.venue_id, show.venue_name
 
   data = []
-  shows = Show.query.join(Venue, Show.venue_id == Venue.id).join(Artist, Artist.id == Show.artist_id).all()
+  shows = Show.query.join(Venue, Show.venue_id==Venue.id).join(Artist, Show.artist_id==Artist.id).all()
   for show in shows:
-    #num_shows upcoming shows per venue
-    if show.start_time > datetime.today():
-      num_upcoming_shows = len(shows)
+    venues = Venue.query.filter_by(id=Show.venue_id).all() #each show has venue
+    #venue = Venue.query.filter_by(id=Show.venue_id).first()
+    for venue in venues:
       #venue
-      venues = Venue.query.filter_by(id=Show.venue_id).all() #each show has venue
-      for venue in venues:
-        show.venue_id = show.venue_id
-        show.venue_name = venue.name
-         
-        #artist
-        artists = Artist.query.filter_by(id=Show.artist_id).all()
-        for artist in artists:
-          show.artist_id = show.artist_id
-          show.artist_name = artist.name
-          show.artist_image_link = artist.image_link 
+      num_upcoming_shows = len(shows)
+      show.venue_id = Show.venue_id
+      show.venue_name = Venue.query.filter_by(id=Show.venue_id).first().name
+      #artist
+      show.artist_id = Show.artist_id
+      show.artist_name = Artist.query.filter_by(id=Show.artist_id).first().name
+      show.artist_image_link = Artist.query.filter_by(id=Show.artist_id).first().image_link 
 
-    
+    if show.start_time >= datetime.today():
       show_detail = {
         "venue_id": show.venue_id,
         "venue_name": show.venue_name,
@@ -528,9 +525,6 @@ def shows():
         "start_time": format_datetime(show.start_time)
       }
       data.append(show_detail)
-            
-    #show.start_time.strftime("%m/%d/%Y, %H:%M")
-    #datetime.strptime(show.start_time, "%m/%d/%Y, %H:%M")
 
   return render_template('pages/shows.html', shows=data)
   
