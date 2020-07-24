@@ -1,0 +1,53 @@
+References
+Knowledgebase
+def show() is not working
+https://knowledge.udacity.com/questions/225467
+JULIANO M
+
+Can I please get some help on displaying the shows on the specific Artist page ?
+https://knowledge.udacity.com/questions/142394
+Vinicius A
+
+How to implement Many-to-Many association table with extra field?
+From <https://knowledge.udacity.com/questions/133411> 
+Alexander M
+
+https://knowledge.udacity.com/questions/145968
+Satyajeet S
+
+https://knowledge.udacity.com/questions/121657
+Alexander M
+
+On shows page, how to get artist/venue to read from database?
+https://knowledge.udacity.com/questions/79197
+
+No Display in upcoming shows and past shows
+https://knowledge.udacity.com/questions/123038
+
+Formating Datetime for front end on Shows route
+https://knowledge.udacity.com/questions/159500
+
+https://knowledge.udacity.com/questions/266741
+
+
+
+Docs 
+https://docs.sqlalchemy.org/en/13/index.html
+
+https://flask-sqlalchemy.palletsprojects.com/en/2.x/quickstart/#simple-relationships
+
+https://docs.sqlalchemy.org/en/13/orm/query.html?highlight=query%20get#sqlalchemy.orm.query.Query.get
+
+https://docs.sqlalchemy.org/en/13/orm/tutorial.html
+
+https://blog.miguelgrinberg.com/post/how-to-add-flask-migrate-to-an-existing-project
+
+https://www.howtogeek.com/658904/how-to-add-a-directory-to-your-path-in-linux/
+
+https://stackoverflow.com/questions/7695962/postgresql-password-authentication-failed-for-user-postgres
+
+https://flask-migrate.readthedocs.io/en/latest/
+
+https://www.programiz.com/python-programming/datetime/strftime
+
+https://video.udacity-data.com/topher/2019/August/5d5a52af_query-cheat-sheet/query-cheat-sheet.pdf
