@@ -3,7 +3,11 @@ Fyyur
 
 ### Introduction
 
-This is project 1 of the Udacity Full Stack Nandodegree. 
+This is project 1 of the Udacity Full Stack Nandodegree. This module focused on SQL And Data Modeling for the Web. 
+* build CRUD app, implement data models in relational, normalized form using SQLAlchemy and SQL
+* manage database schema using version control system with migration files
+* connect data models to postgresql database
+* join relational tables and conduct joined queries using SQL and SQLAlchemy
 
 Fyyur is a musical venue and artist booking site that facilitates the discovery and bookings of shows between local performing artists and venues. This site lets you list new artists and venues, discover them, and list shows with artists as a venue owner.
 
@@ -105,7 +109,7 @@ Acceptance Criteria
 
 ### Development Setup
 
-First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-flask) if you haven't already.
+First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-flask).
 
   ```
   $ cd ~
