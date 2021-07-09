@@ -3,46 +3,40 @@ Fyyur
 
 ### Introduction
 
-This is project 1 of the Udacity Full Stack Nandodegree. This module focused on SQL And Data Modeling for the Web. 
-* build CRUD app, implement data models in relational, normalized form using SQLAlchemy and SQL
-* manage database schema using version control system with migration files
-* connect data models to postgresql database
-* join relational tables and conduct joined queries using SQL and SQLAlchemy
-
 Fyyur is a musical venue and artist booking site that facilitates the discovery and bookings of shows between local performing artists and venues. This site lets you list new artists and venues, discover them, and list shows with artists as a venue owner.
 
-The assignment involved building out missing data models and model interactions to power the API endpoints for the Fyyur site by connecting to a PostgreSQL database for storing, querying, updating, and creating information about artists and venues on Fyyur rendering a fully functioning site. (Views and controllers were defined.)
+Your job is to build out the data models to power the API endpoints for the Fyyur site by connecting to a PostgreSQL database for storing, querying, and creating information about artists and venues on Fyyur.
 
 ### Overview
 
-Using a PostgreSQL database, this site is capable of:
+This app is nearly complete. It is only missing one thing… real data! While the views and controllers are defined in this application, it is missing models and model interactions to be able to store retrieve, and update data from a database. By the end of this project, you should have a fully functioning site that is at least capable of doing the following, if not more, using a PostgreSQL database:
 
-* creating new venues as well as artists, and creating new shows.
+* creating new venues, artists, and creating new shows.
 * searching for venues and artists.
 * learning more about a specific artist or venue.
 
-The goal of Fyyur is to be a platform that artists and musical venues can use to find each other and audiences can discover new music shows. 
+We want Fyyur to be the next new platform that artists and musical venues can use to find each other, and discover new music shows. Let's make that happen!
 
 ### Tech Stack
 
-The tech stack includes:
+Our tech stack will include:
 
-* **SQLAlchemy ORM** is the ORM library 
-* **PostgreSQL** is the database 
-* **Python3** and **Flask** is the server language and server framework
-* **Flask-Migrate** is used for creating and running schema migrations
-* **HTML**, **CSS**, and **Javascript** with [Bootstrap 3](https://getbootstrap.com/docs/3.4/customize/) for the website's frontend
+* **SQLAlchemy ORM** to be our ORM library of choice
+* **PostgreSQL** as our database of choice
+* **Python3** and **Flask** as our server language and server framework
+* **Flask-Migrate** for creating and running schema migrations
+* **HTML**, **CSS**, and **Javascript** with [Bootstrap 3](https://getbootstrap.com/docs/3.4/customize/) for our website's frontend
 
 ### Main Files: Project Structure
 
   ```sh
   ├── README.md
-  ├── app.py *** the main driver of the app and includes SQLAlchemy models.
-                    "python app.py" to run after installing dependencies
-  ├── config.py *** Database URLs, CSRF generation, etc.
+  ├── app.py *** the main driver of the app. Includes your SQLAlchemy models.
+                    "python app.py" to run after installing dependences
+  ├── config.py *** Database URLs, CSRF generation, etc
   ├── error.log
   ├── forms.py *** Your forms
-  ├── requirements.txt *** The dependencies needed to install with "pip3 install -r requirements.txt"
+  ├── requirements.txt *** The dependencies we need to install with "pip3 install -r requirements.txt"
   ├── static
   │   ├── css 
   │   ├── font
@@ -64,12 +58,12 @@ Overall:
 
 
 Highlight folders:
-* `templates/pages` -- (Already defined.) Defines the pages that are rendered to the site. These templates render views based on data passed into the template’s view, in the controllers defined in `app.py`. These pages successfully represent the data to the user, and are already defined.
+* `templates/pages` -- (Already complete.) Defines the pages that are rendered to the site. These templates render views based on data passed into the template’s view, in the controllers defined in `app.py`. These pages successfully represent the data to the user, and are already defined for you.
 * `templates/layouts` -- (Already complete.) Defines the layout that a page can be contained in to define footer and header code for a given page.
 * `templates/forms` -- (Already complete.) Defines the forms used to create new artists, shows, and venues.
 * `app.py` -- (Missing functionality.) Defines routes that match the user’s URL, and controllers which handle data and renders views to the user. This is the main file you will be working on to connect to and manipulate the database and render views with data to the user, based on the URL.
 * Models in `app.py` -- (Missing functionality.) Defines the data models that set up the database tables.
-* `config.py` -- (Missing functionality.) Stores configuration variables and instructions, separate from the main application code. This is where the database is connected.
+* `config.py` -- (Missing functionality.) Stores configuration variables and instructions, separate from the main application code. This is where you will need to connect to the database.
 
 
 Instructions
@@ -106,10 +100,19 @@ Acceptance Criteria
   * The relationship between the models should be accurately configured, and referential integrity amongst the models should be preserved.
   * `flask db migrate` should work, and populate my local postgres database with properly configured tables for this application's objects, including proper columns, column data types, constraints, defaults, and relationships that completely satisfy the needs of this application. The proper type of relationship between venues, artists, and shows should be configured.
 
+##### Stand Out
+
+Looking to go above and beyond? This is the right section for you! Here are some challenges to make your submission stand out:
+
+*  Implement artist availability. An artist can list available times that they can be booked. Restrict venues from being able to create shows with artists during a show time that is outside of their availability.
+* Show Recent Listed Artists and Recently Listed Venues on the homepage, returning results for Artists and Venues sorting by newly created. Limit to the 10 most recently listed items.
+* Implement Search Artists by City and State, and Search Venues by City and State. Searching by "San Francisco, CA" should return all artists or venues in San Francisco, CA.
+
+Best of luck in your final project! Fyyur depends on you!
 
 ### Development Setup
 
-First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-flask).
+First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-flask) if you haven't already.
 
   ```
   $ cd ~
